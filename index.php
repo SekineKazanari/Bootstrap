@@ -54,7 +54,7 @@
 			<!-- JUMBOTRON -->
 			<div class="jumbotron">
 			  <h1 class="display-4">
-			  	Gatos
+			  	Cats
 			  </h1>
 
 			  <!-- Carrusel -->
