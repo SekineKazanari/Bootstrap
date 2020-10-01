@@ -1,3 +1,11 @@
+<?php
+	include "controllers/UserController.php";
+	$UserController = new UserController();
+
+	$users = $UserController->get();
+	echo json_encode($users);
+?>
+
 <!DOCTYPE html>
 <html>
 <head>
@@ -70,34 +78,41 @@
 						</div>
 						<div class="card-body">
 							<table class="table table-striped">
-							  <thead>
-							    <tr>
-							      <th scope="col">#</th>
-							      <th scope="col">First</th>
-							      <th scope="col">Last</th>
-							      <th scope="col">Handle</th>
-							    </tr>
-							  </thead>
-							  <tbody>
-							    <tr>
-							      <th scope="row">1</th>
-							      <td>Mark</td>
-							      <td>Otto</td>
-							      <td>@mdo</td>
-							    </tr>
-							    <tr>
-							      <th scope="row">2</th>
-							      <td>Jacob</td>
-							      <td>Thornton</td>
-							      <td>@fat</td>
-							    </tr>
-							    <tr>
-							      <th scope="row">3</th>
-							      <td>Larry</td>
-							      <td>the Bird</td>
-							      <td>@twitter</td>
-							    </tr>
-							  </tbody>
+							    <thead>
+								    <tr>
+								        <th scope="col">#</th>
+								        <th scope="col">Nombre</th>
+								        <th scope="col">
+								    		<a> Correo electrónico </a>
+								    	</th>
+								        <th scope="col">Estatus</th>
+								        <th scope="col">Acciones</th>
+								    </tr>
+							    </thead>
+							    <tbody>
+								    <tr>
+								        <th scope="row">1</th>
+								        <td>
+								        	Mark
+								        </td>
+								        <td>
+								      		<a href="mailto:otto@example.com"> otto@example.com </a>
+								        </td>
+								        <td>
+								        	@mdo
+								    	</td>
+								        <td>
+								      		<button type="button" class="btn btn-warning">
+								      			<i class="fa fa-pencil"></i>
+								      			Editar
+								      		</button>
+								      		<button onclick="remove(1)" type="button" class="btn btn-danger">
+								      			<i class="fa fa-trash"></i>
+								      			Eliminar
+								      		</button>
+								      </td>
+								    </tr>
+							    </tbody>
 							</table>
 						</div>
 					</div>
@@ -239,6 +254,26 @@
 
 				return false;
 			}
+		}
+
+		function remove(){
+			swal({
+				  title: "",
+				  text: "¿Desea eliminar el usuario",
+				  icon: "warning",
+				  buttons: true,
+				  dangerMode: true,
+				  buttons: ["Cancelar", "Eliminar"]
+				})
+				.then((willDelete) => {
+				  if (willDelete) {
+				    swal("¡Ususario eliminado con exito!", {
+				      icon: "success",
+				    });
+				  } else {
+				    ´//swal("Your imaginary file is safe!");
+				  }
+				});
 		}
 	</script>
 
