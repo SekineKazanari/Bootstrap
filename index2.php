@@ -3,7 +3,7 @@
 	$UserController = new UserController();
 
 	$users = $UserController->get();
-	echo json_encode($users);
+	//echo json_encode($users);
 ?>
 
 <!DOCTYPE html>
@@ -65,7 +65,32 @@
 				</nav>
 			</div>
 
-			<!-- Otro card -->
+			<!-- NOTIFICACION -->	
+			<?php if (isset($_SESSION['status']) && $_SESSION['status']=="success"): ?>
+			<div class="alert alert-warning alert-dismissible fade show" role="alert">
+				<strong>
+					Correcto!
+				</strong> <?=$_SESSION['message']?>
+				<button type="button" class="close" data-dismiss="alert" aria-label="Close">
+					<span aria-hidden="true">&times;</span>
+				</button>
+			</div>
+			<?php unset($_SESSION['status']); ?>
+			<?php endif ?>
+
+			<?php if (isset($_SESSION['status']) && $_SESSION['status']=="error"): ?>
+			<div class="alert alert-warning alert-dismissible fade show" role="alert">
+				<strong>
+					Error!
+				</strong> <?=$_SESSION['message']?>
+				<button type="button" class="close" data-dismiss="alert" aria-label="Close">
+					<span aria-hidden="true">&times;</span>
+				</button>
+			</div>
+			<?php unset($_SESSION['status']); ?>
+			<?php endif ?>
+
+			<!-- TABLA DE USUARIOS -->
 			<div class="row">
 				<div class="col-12">
 					<div class="card mb-4">
@@ -90,28 +115,50 @@
 								    </tr>
 							    </thead>
 							    <tbody>
+							    	<?php if (isset($users) && count($users)>0): ?>
+							    	<?php foreach ($users as $user): ?>
+
 								    <tr>
-								        <th scope="row">1</th>
+								        <th scope="row">
+								        	<?= $user['id'] ?>
+								        </th>
 								        <td>
-								        	Mark
+								        	<?= $user['name'] ?>
 								        </td>
 								        <td>
-								      		<a href="mailto:otto@example.com"> otto@example.com </a>
+								      		<a href="mailto:<?= $user['email'] ?>">
+								      			<?= $user['email'] ?>
+								      		</a>
 								        </td>
 								        <td>
-								        	@mdo
-								    	</td>
-								        <td>
-								      		<button type="button" class="btn btn-warning">
-								      			<i class="fa fa-pencil"></i>
-								      			Editar
-								      		</button>
-								      		<button onclick="remove(1)" type="button" class="btn btn-danger">
-								      			<i class="fa fa-trash"></i>
-								      			Eliminar
-								      		</button>
+								        	<?php if ($user['status']): ?>
+
+								        		<span class="badge badge-success">
+								        			Activo
+								        		</span>
+
+								        	<?php else: ?>
+
+								        		<span class="badge badge-warning">
+								        			Inactivo
+								        		</span>
+
+								        	<?php endif ?>
+								      </td>
+								      <td>
+								      	<button type="button" class="btn btn-warning">
+							      			<i class="fa fa-pencil"></i>
+							      			Editar
+							      		</button>
+							      		<button onclick="remove(1)" type="button" class="btn btn-danger">
+							      			<i class="fa fa-trash"></i>
+							      			Eliminar
+							      		</button>
 								      </td>
 								    </tr>
+
+									<?php endforeach ?>
+									<?php endif ?>
 							    </tbody>
 							</table>
 						</div>
@@ -132,7 +179,7 @@
 					        </button>
 				        </div>
 
-				        <form onsubmit="return validarRegistro()">
+				        <form method="POST" action="controllers/UserController.php" onsubmit="return validarRegistro()">
 					        <div class="modal-body">
 					        	<form>
 
@@ -147,7 +194,7 @@
 													<i class="fa fa-user" aria-hidden="true"></i>
 												</span>
 											</div>
-											<input type="text" class="form-control" id="nombre" aria-describedy="emailHelp" placeholder="Lucy Heartfilia" required="">
+											<input type="text" class="form-control" id="nombre" aria-describedy="emailHelp" placeholder="Lucy Heartfilia" required="" name="name">
 										</div>
 										<small id="emailHelp" class="form-text text-muted">No ingrese números.</small>
 									</div>
@@ -163,7 +210,7 @@
 													<i class="fa fa-at" aria-hidden="true"></i>
 												</span>
 											</div>
-											<input type="text" class="form-control" id="email" aria-describedy="emailHelp" placeholder="lucy@hotmail.com" required="">
+											<input type="text" class="form-control" id="email" aria-describedy="emailHelp" placeholder="lucy@hotmail.com" required="" name="email">
 										</div>
 									</div>
 
@@ -178,7 +225,7 @@
 													<i class="fa fa-lock"></i>
 												</span>
 											</div>
-											<input type="password" class="form-control" id="password" aria-describedy="emailHelp" placeholder="*****" required="">
+											<input type="password" class="form-control" id="password" aria-describedy="emailHelp" placeholder="*****" required="" name="password">
 										</div>
 									</div>
 
@@ -200,6 +247,7 @@
 									<div class="modal-footer">
 								        <button type="submit" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
 								        <button type="submit" class="btn btn-primary">Guardar</button>
+								        <input type="hidden" name="action" value="store">
 							        </div>
 
 								</form>
