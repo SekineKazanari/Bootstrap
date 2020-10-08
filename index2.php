@@ -97,7 +97,7 @@
 						<div class="card-header">
 							Lista de usuarios registrados
 
-							<button type="button" data-toggle="modal" data-target="#staticBackdrop" class="btn btn-primary float-right">
+							<button type="button" data-toggle="modal" data-target="#staticBackdrop" class="btn btn-primary float-right" onclick="add()">
 								Añadir usuario
 							</button>
 						</div>
@@ -146,10 +146,11 @@
 								        	<?php endif ?>
 								      </td>
 								      <td>
-								      	<button type="button" class="btn btn-warning">
+								      	<button data-info='<?= json_encode($user) ?>' type="button" class="btn btn-warning" data-toggle='modal' data-target='#staticBackdrop' onclick="editar(this)" id="editar">
 							      			<i class="fa fa-pencil"></i>
 							      			Editar
 							      		</button>
+
 							      		<button onclick="remove(1)" type="button" class="btn btn-danger">
 							      			<i class="fa fa-trash"></i>
 							      			Eliminar
@@ -179,7 +180,7 @@
 					        </button>
 				        </div>
 
-				        <form method="POST" action="controllers/UserController.php" onsubmit="return validarRegistro()">
+				        <form method="POST" id="myForm" action="controllers/UserController.php" onsubmit="return validarRegistro()">
 					        <div class="modal-body">
 					        	<form>
 
@@ -194,7 +195,7 @@
 													<i class="fa fa-user" aria-hidden="true"></i>
 												</span>
 											</div>
-											<input type="text" class="form-control" id="nombre" aria-describedy="emailHelp" placeholder="Lucy Heartfilia" required="" name="name">
+											<input type="text" class="form-control" id="name" aria-describedy="emailHelp" placeholder="Lucy Heartfilia" required="" name="name">
 										</div>
 										<small id="emailHelp" class="form-text text-muted">No ingrese números.</small>
 									</div>
@@ -245,9 +246,12 @@
 									</div>
 
 									<div class="modal-footer">
-								        <button type="submit" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
-								        <button type="submit" class="btn btn-primary">Guardar</button>
-								        <input type="hidden" name="action" value="store">
+								        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
+								        <button type="submit" class="btn btn-primary">
+								        	Guardar
+								        </button>
+								        <input type="hidden" name="action" id="action" value="store">
+								        <input type="hidden" name="id" id="id">
 							        </div>
 
 								</form>
@@ -305,6 +309,7 @@
 		}
 
 		function remove(){
+			console.log("xd");
 			swal({
 				  title: "",
 				  text: "¿Desea eliminar el usuario",
@@ -319,9 +324,29 @@
 				      icon: "success",
 				    });
 				  } else {
-				    ´//swal("Your imaginary file is safe!");
+				    //swal("Your imaginary file is safe!");
 				  }
 				});
+		}
+
+		function editar(target){
+			//console.log(target);
+			var info = $(target).data('info');
+
+			console.log(info);
+
+			$("#name").val(info.name);
+			$("#email").val(info.email);
+			$("#password").val(info.password);
+			$("#password2").val(info.password)
+			$("#id").val(info.id);
+
+			$("#action").val('update')
+		}
+
+		function add(){
+			$("#action").val('store');
+			document.getElementById("myForm").reset();
 		}
 	</script>
 
