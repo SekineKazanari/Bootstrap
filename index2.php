@@ -3,7 +3,7 @@
 	$UserController = new UserController();
 
 	$users = $UserController->get();
-	//echo json_encode($users);
+	//echo $_SESSION['token'];
 ?>
 
 <!DOCTYPE html>
@@ -15,13 +15,13 @@
 
 	<script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"> </script> 
 
-	<script type="text/javascript" src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
-
 	<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" integrity="sha384-JcKb8q3iqJ61gNV9KGb8thSsNjpSL0n8PARn9HuZOnIxN0hoP+VmmDGMN5t9UJ0Z" crossorigin="anonymous">
 
 	<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
 	<script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js" integrity="sha384-9/reFTGAW83EW2RDu2S0VKaIzap3H66lZH81PoYlFhbGU+6BZp6G7niu735Sk7lN" crossorigin="anonymous"></script>
 	<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js" integrity="sha384-B4gt1jrGC7Jh4AgTPSdUtOBvfO8shuf57BaghqFfPlYxofvL8/KUEfYiJOMMV+rV" crossorigin="anonymous"></script>
+
+	<script type="text/javascript" src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
 </head>
 <body>
 	<div id="wrapper">
@@ -151,7 +151,7 @@
 							      			Editar
 							      		</button>
 
-							      		<button onclick="remove(1)" type="button" class="btn btn-danger">
+							      		<button onclick="remove(<?= $user['id'] ?>,this)" type="button" class="btn btn-danger">
 							      			<i class="fa fa-trash"></i>
 							      			Eliminar
 							      		</button>
@@ -180,7 +180,7 @@
 					        </button>
 				        </div>
 
-				        <form method="POST" id="myForm" action="controllers/UserController.php" onsubmit="return validarRegistro()">
+				        <form method="POST" id="myForm" action="users" onsubmit="return validarRegistro()">
 					        <div class="modal-body">
 					        	<form>
 
@@ -252,6 +252,7 @@
 								        </button>
 								        <input type="hidden" name="action" id="action" value="store">
 								        <input type="hidden" name="id" id="id">
+								        <input type="hidden" name="token" value="<?= $_SESSION['token'] ?>">
 							        </div>
 
 								</form>
@@ -308,32 +309,50 @@
 			}
 		}
 
-		function remove(){
-			console.log("xd");
+		function remove(id, target) {
+			console.log(id);
 			swal({
-				  title: "",
-				  text: "¿Desea eliminar el usuario",
-				  icon: "warning",
-				  buttons: true,
-				  dangerMode: true,
-				  buttons: ["Cancelar", "Eliminar"]
-				})
-				.then((willDelete) => {
-				  if (willDelete) {
-				    swal("¡Ususario eliminado con exito!", {
-				      icon: "success",
-				    });
-				  } else {
-				    //swal("Your imaginary file is safe!");
-				  }
+			  title: "",
+			  text: "¿Desea eliminar el usuario?",
+			  icon: "warning",
+			  buttons: true,
+			  dangerMode: true,
+			  buttons: ["Cancelar", "Eliminar"]
+			})
+			.then((willDelete) => {
+			  if (willDelete) {
+
+				$.ajax ({
+					url: 'users',
+					type: 'POST',
+					dataType: 'json',
+					data: {action: 'remove',user_id:id,token:'<?= $_SESSION['token'] ?>'},
+					success: function(json) {
+						console.log(json);
+
+						swal("Poof! Your user has been deleted!", {
+					    	icon: "success",
+					    });
+					   // $(target).parent().parent().remove();
+					    window.location.href = 'index2.php';
+					},
+					error: function(xhr, status) {
+						console.log(xhr);
+						console.log(status);
+					}
 				});
+
+			  } else {
+			    swal("Your user data is safe!");
+			  }
+			});
 		}
 
 		function editar(target){
 			//console.log(target);
 			var info = $(target).data('info');
 
-			console.log(info);
+			//console.log(info);
 
 			$("#name").val(info.name);
 			$("#email").val(info.email);

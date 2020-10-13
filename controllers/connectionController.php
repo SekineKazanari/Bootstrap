@@ -8,4 +8,9 @@
 	if (!isset($_SESSION)) {
 		session_start();
 	}
+
+	//tokens
+	if (!isset($_SESSION['token'])) {
+		$_SESSION['token'] = md5( uniqid(mt_rand(),true) );
+	}
 ?>

@@ -4,31 +4,44 @@
 
 	if (isset($_POST) && isset($_POST['action'])) {
 
-		$UserController = new UserController();
+		if ($_SESSION['token'] == $_SESSION['token']) {
 
-		switch ($_POST['action']) {
-			case 'store':
-				$name = strip_tags($_POST['name']);
-				$email = strip_tags($_POST['email']);
-				$password = strip_tags($_POST['password']);
+			$UserController = new UserController();
 
-				$UserController->store($name,$email,$password);
+			switch ($_POST['action']) {
+				case 'store':
+					$name = strip_tags($_POST['name']);
+					$email = strip_tags($_POST['email']);
+					$password = strip_tags($_POST['password']);
 
-				break;
+					$UserController->store($name,$email,$password);
 
-			case 'update':
-				$name = strip_tags($_POST['name']);
-				$email = strip_tags($_POST['email']);
-				$password = strip_tags($_POST['password']);
-				$id = strip_tags($_POST['id']);
+					break;
 
-				$UserController->update($name,$email,$password,$id);
+				case 'update':
+					$name = strip_tags($_POST['name']);
+					$email = strip_tags($_POST['email']);
+					$password = strip_tags($_POST['password']);
+					$id = strip_tags($_POST['id']);
 
-				break;
-			
-			default:
-				# code...
-				break;
+					$UserController->update($name,$email,$password,$id);
+
+					break;
+
+				case 'remove':
+					$id = strip_tags($_POST['user_id']);
+					echo json_encode($UserController->remove($id));
+					break;
+
+				default:
+					# code...
+					break;
+			}
+		}else{
+			$respuesta = array(
+				'status'=>"error",
+                'message'=> "Sin autorización"
+			);
 		}
 	}
 
@@ -63,21 +76,21 @@
 					if ($prepared_query->execute()) {
 
 						$_SESSION['status'] = "success";
-						$_SESSION['messahe'] = "El registro no se ha guardado correctamente";
+						$_SESSION['message'] = "El registro no se ha guardado correctamente";
 
 						header('Location: ' . $_SERVER['HTTP_REFERER']);
 					}
 				}else{
 
 					$_SESSION['status'] = "error";
-					$_SESSION['messahe'] = "El registro no se ha guardado";
+					$_SESSION['message'] = "El registro no se ha guardado";
 
 					header('Location: ' . $_SERVER['HTTP_REFERER']);
 				}
 			}else{
 
 				$_SESSION['status'] = "error";
-				$_SESSION['messahe'] = "Error durante la conexión";
+				$_SESSION['message'] = "Error durante la conexión";
 
 				header('Location: ' . $_SERVER['HTTP_REFERER']);
 			}
@@ -119,6 +132,52 @@
 
 				header('Location: ' . $_SERVER['HTTP_REFERER']);
 			}
+		}
+
+		public function remove($id){
+
+			$conn = connect();
+
+			if (!$conn->connect_error){
+
+				if ($id != "") {
+
+					var_dump($id);
+
+					$query = "delete from users where id = ?";
+					$prepared_query = $conn->prepare($query);
+					$prepared_query->bind_param('i',$id);
+
+					if ($prepared_query->execute()) {
+
+						$respuesta = array(
+                        'status'=>"success",
+                        "$id"=>$id,
+                        'message'=> "El registro se ha eliminado."
+                    );
+                    return $respuesta;
+                        
+                    }else{
+                        $respuesta= array(
+                        'status'=>"error",
+                        'message'=> "El registro no se ha eliminado."
+                    );
+                    return $respuesta;
+                    }
+                }else{
+                    $respuesta= array(
+                        'status'=>"error",
+                        'message'=> "Verifique la información enviada."
+                    );
+                    return $respuesta;
+                }
+            }else{
+                $respuesta= array(
+                    'status'=>"error",
+                    'message'=> "Error durante la conexión."
+                );
+                return $respuesta;
+            }
 		}
 	}
 
