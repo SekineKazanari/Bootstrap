@@ -310,7 +310,6 @@
 		}
 
 		function remove(id, target) {
-			console.log(id);
 			swal({
 			  title: "",
 			  text: "¿Desea eliminar el usuario?",
@@ -321,29 +320,28 @@
 			})
 			.then((willDelete) => {
 			  if (willDelete) {
-
 				$.ajax ({
-					url: 'users',
-					type: 'POST',
-					dataType: 'json',
-					data: {action: 'remove',user_id:id,token:'<?= $_SESSION['token'] ?>'},
+					url: "users",
+					type: "POST",
+					dataType: "text",
+					data: {action: "remove", user_id: id, token:'<?= $_SESSION['token']?>'},
+
 					success: function(json) {
 						console.log(json);
-
-						swal("Poof! Your user has been deleted!", {
+						swal("¡Usuario eliminado con exito!", {
 					    	icon: "success",
 					    });
-					   // $(target).parent().parent().remove();
-					    window.location.href = 'index2.php';
+					    $(target).parent().parent().remove();
 					},
-					error: function(xhr, status) {
+
+					error: function(xhr,status) {
 						console.log(xhr);
 						console.log(status);
 					}
 				});
 
-			  } else {
-			    swal("Your user data is safe!");
+			  }else {
+			    swal("El usuario no ha sido eliminado.");
 			  }
 			});
 		}
